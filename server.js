@@ -12,9 +12,21 @@ const propertyRoutes = require('./routes/propertyRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://88royals.netlify.app'
+];
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g., mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error(`CORS error: Not allowed by CORS for origin ${origin}`), false);
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
